@@ -70,6 +70,7 @@ function addCart(id) {
     .then((res) => {
       cartData = res.data.carts;
       renderCart();
+      getCart();
     })
     .catch((err) => {
       alert(err);
@@ -102,11 +103,14 @@ discardAllBtn.addEventListener("click", (e) => {
 });
 
 //渲染購物車
+let cartData = [];
+let cartTotal = 0;
 function getCart() {
   axios
     .get(`${customerApi}/carts`)
     .then((res) => {
       cartData = res.data.carts;
+      cartTotal = res.data.finalTotal;
       renderCart();
     })
     .catch((err) => {
@@ -117,14 +121,13 @@ function getCart() {
 const shoppingCartTableBody = document.querySelector(
   ".shoppingCart-table tbody"
 );
-const shoppingCartTableFoot = document.querySelector(
-  ".shoppingCart-table tfoot"
-);
+const shoppingCartTableFootTotal = document.querySelector(".cartTotal");
 
 function renderCart() {
   if (cartData.length === 0) {
     shoppingCartTableBody.innerHTML = "購物車目前無商品";
-    shoppingCartTableFoot.innerHTML = "";
+    shoppingCartTableFootTotal.innerHTML = "NT$0";
+    discardAllBtn.disabled = true; // 禁用按鈕
     return;
   }
   let str = "";
@@ -147,6 +150,8 @@ function renderCart() {
 						</tr>`;
   });
   shoppingCartTableBody.innerHTML = str;
+  shoppingCartTableFootTotal.innerHTML = `NT$${cartTotal}`;
+  discardAllBtn.disabled = false; // 啟用按鈕
 }
 
 //初始化
