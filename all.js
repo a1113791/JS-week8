@@ -14,6 +14,11 @@ const shoppingCartTableBody = document.querySelector(
 const shoppingCartTableFootTotal = document.querySelector(".cartTotal"); //購物車Total
 const discardAllBtn = document.querySelector(".discardAllBtn"); //刪除購物車所有商品
 const orderInfoBtn = document.querySelector(".orderInfo-btn"); //送出按鈕
+//表單驗證
+const customerName = document.querySelector("#customerName");
+const customerPhone = document.querySelector("#customerPhone");
+const customerEmail = document.querySelector("#customerEmail");
+const customerAddress = document.querySelector("#customerAddress");
 
 //取得產品列表
 function getProduct() {
@@ -200,6 +205,34 @@ orderInfoBtn.addEventListener("click", (e) => {
   e.preventDefault();
   sendOrder();
 });
+
+//表單驗證
+function checkValue() {
+  const constraints = {
+    姓名: {
+      presence: {
+        message: "^必填",
+      },
+    },
+    電話: {
+      presence: {
+        message: "^必填",
+      },
+    },
+    Email: {
+      email: {
+        message: "^必填",
+      },
+    },
+    寄送地址: {
+      presence: {
+        message: "^必填",
+      },
+    },
+  };
+  const errors = validate(orderInfoForm, constraints);
+  console, log(errors);
+}
 
 //編輯產品數量
 // function updateCart(id, qty) {
