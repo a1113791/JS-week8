@@ -15,6 +15,17 @@ const shoppingCartTableFootTotal = document.querySelector(".cartTotal"); //購�
 const discardAllBtn = document.querySelector(".discardAllBtn"); //刪除購物車所有商品
 const orderInfoBtn = document.querySelector(".orderInfo-btn"); //送出按鈕
 const orderInfoForm = document.querySelector(".orderInfo-form"); //表單
+const Toast = Swal.mixin({
+  toast: true,
+  position: "top-end",
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  didOpen: (toast) => {
+    toast.onmouseenter = Swal.stopTimer;
+    toast.onmouseleave = Swal.resumeTimer;
+  },
+}); //SweetAlert2 右上角效果
 
 //取得產品列表
 function getProduct() {
@@ -76,6 +87,10 @@ function addCart(id) {
     .post(`${customerApi}/carts`, data)
     .then((res) => {
       cartData = res.data.carts;
+      Toast.fire({
+        icon: "success",
+        title: "成功加入購物車",
+      });
       renderCart();
       getCart();
     })
@@ -219,7 +234,12 @@ function sendOrder() {
     return;
   }
   if (checkForm()) {
-    alert("必填");
+    Swal.fire({
+      icon: "error",
+      title: "錯誤",
+      text: "需填寫預訂資料",
+      footer: "",
+    });
     return;
   }
   const customerName = document.querySelector("#customerName");
@@ -242,6 +262,8 @@ function sendOrder() {
     .post(`${customerApi}/orders`, data)
     .then((res) => {
       console.log(res);
+      orderInfoForm.reset();
+      getCart();
     })
     .catch((err) => {
       alert(err);
@@ -252,37 +274,6 @@ orderInfoBtn.addEventListener("click", (e) => {
   e.preventDefault();
   sendOrder();
 });
-
-//編輯產品數量
-// function updateCart(id, qty) {
-//   const data = {
-//     data: {
-//       id,
-//       quantity: qty,
-//     },
-//   };
-//   const item = cartData.find((item) => item.id === id);
-//   const qty = Math.max(item.quantity + data.qty, 1); // 最低為1
-//   axios
-//     .patch(`${customerApi}/carts/${id}`)
-//     .then((res) => {
-//       cartData = res.data.carts;
-//       cartTotal = res.data.finalTotal;
-//       renderCart();
-//     })
-//     .catch((err) => {
-//       alert(err);
-//     });
-// }
-
-// shoppingCartTableBody.addEventListener("click", (e) => {
-//   e.preventDefault();
-//   if (e.target.classList.contains("addBtn")) {
-//     updateCart(e.target.dataset.id, 1);
-//   } else if (e.target.classList.contains("minusBtn")) {
-//     updateCart(e.target.dataset.id, -1);
-//   }
-// });
 
 //初始化
 function init() {
