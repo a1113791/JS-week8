@@ -14,11 +14,7 @@ const shoppingCartTableBody = document.querySelector(
 const shoppingCartTableFootTotal = document.querySelector(".cartTotal"); //購物車Total
 const discardAllBtn = document.querySelector(".discardAllBtn"); //刪除購物車所有商品
 const orderInfoBtn = document.querySelector(".orderInfo-btn"); //送出按鈕
-//表單驗證
-const customerName = document.querySelector("#customerName");
-const customerPhone = document.querySelector("#customerPhone");
-const customerEmail = document.querySelector("#customerEmail");
-const customerAddress = document.querySelector("#customerAddress");
+const orderInfoForm = document.querySelector(".orderInfo-form"); //表單
 
 //取得產品列表
 function getProduct() {
@@ -179,15 +175,66 @@ shoppingCartTableBody.addEventListener("click", (e) => {
 });
 
 //訂單送出
+
+function checkForm() {
+  const constraints = {
+    姓名: {
+      presence: {
+        message: "^必填",
+      },
+    },
+    電話: {
+      presence: {
+        message: "^必填",
+      },
+    },
+    Email: {
+      presence: {
+        message: "^必填",
+      },
+      email: {
+        message: "請輸入正確的信箱格式",
+      },
+    },
+    寄送地址: {
+      presence: {
+        message: "^必填",
+      },
+    },
+  };
+  const errors = validate(orderInfoForm, constraints);
+
+  if (errors) {
+    const errorArr = Object.keys(errors);
+    errorArr.forEach((item) => {
+      const message = document.querySelector(`[data-message="${item}"]`);
+      message.textContent = errors[item][0];
+    });
+  }
+  return errors;
+}
+
 function sendOrder() {
-  let data = {
+  if (cartData.length === 0) {
+    return;
+  }
+  if (checkForm()) {
+    alert("必填");
+    return;
+  }
+  const customerName = document.querySelector("#customerName");
+  const customerPhone = document.querySelector("#customerPhone");
+  const customerEmail = document.querySelector("#customerEmail");
+  const customerAddress = document.querySelector("#customerAddress");
+  const tradeWay = document.querySelector("#tradeWay");
+  const data = {
     data: {
       user: {
-        name: "六角學院",
-        tel: "07-5313506",
-        email: "hexschool@hexschool.com",
-        address: "高雄市六角學院路",
-        payment: "Apple Pay",
+        name: customerName.value.trim(),
+        tel: customerPhone.value.trim(),
+        email: customerEmail.value.trim(),
+        address: customerAddress.value.trim(),
+        payment: tradeWay.value.trim(),
       },
     },
   };
@@ -205,34 +252,6 @@ orderInfoBtn.addEventListener("click", (e) => {
   e.preventDefault();
   sendOrder();
 });
-
-//表單驗證
-function checkValue() {
-  const constraints = {
-    姓名: {
-      presence: {
-        message: "^必填",
-      },
-    },
-    電話: {
-      presence: {
-        message: "^必填",
-      },
-    },
-    Email: {
-      email: {
-        message: "^必填",
-      },
-    },
-    寄送地址: {
-      presence: {
-        message: "^必填",
-      },
-    },
-  };
-  const errors = validate(orderInfoForm, constraints);
-  console, log(errors);
-}
 
 //編輯產品數量
 // function updateCart(id, qty) {
